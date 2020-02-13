@@ -1,20 +1,14 @@
 #do this hash fuction later 
 import math
-def h2Uni(x,m):
-        """
-        A 2-universal hash function of a positive integer
-        x is the value to be hashed
-        m is the hash table size
+from sklearn.utils import murmurhash3_32
 
-        """
-
-        return (((60843 * x) + 470521)  % m)
-
-def hashfunc(x,m):
-        return h2Uni(x,m)
+def hashfunc(m):
+        #defining my hash function with the right m
+        def myhash(x,seed):
+                return (murmurhash3_32(x,seed=seed)) % m
+        return myhash
 
 
-...
 import array
 def makeBitArray(bitSize, fill = 0):
         '''
@@ -25,9 +19,9 @@ def makeBitArray(bitSize, fill = 0):
         if (bitSize & 31): # if bitSize != (32 * n) add
                 intSize += 1                        #    a record for stragglers
         if fill == 1:
-                fill = 4294967295                                 # all bits set
+                fill = 4294967295         # all bits set
         else:
-                fill = 0                                      # all bits cleared
+                fill = 0                # all bits cleared
 
         bitArray = array.array('I')          # 'I' = unsigned 32-bit integer
 
@@ -40,7 +34,7 @@ def testBit(array_name, bit_num):
      offset = bit_num & 31
      mask = 1 << offset
      return(array_name[record] & mask)
-
+ #setBit() returns an integer with the bit at 'bit_num' set to 1.
 def setBit(array_name, bit_num):
      record = bit_num >> 5
      offset = bit_num & 31
@@ -53,21 +47,26 @@ class BloomFilter ():
         def __init__ ( self , n , fp_rate ):
                 self.R = n*math.log(fp_rate - 0.618)
                 self.val = makeBitArray(bitSize = self.R,fill = 0) 
-        
-        #hashing a value and adding it into the bloom filter
-        def insert ( self , key ):
-                #hashing the key first
-                bit_pos = hashfunc(key,self.R)
-                #setBit() returns an integer with the bit at 'bit_num' set to 1.
-                return setBit(self.val,bit_pos)
+                self.kval = (self.R / n) * math.log(2)
+                self.hfunc = hashfunc(self.R)
 
+        def insert (self, key):
+                #Retrieved the hash function
+                for i in range(self.kval): #hashing the vlaue for each k value
+                        bit_pos = self.hfunc(x = key, seed = i)
+                        setBit(array_name = self.val, bit_num = bit_pos )
 
-
-        ...
+        # testBit() returns a nonzero result, 2**offset, if the bit at 'bit_num' is set to 1.
         #method used to know whether a query is in the set or not
-        def test ( self , key ):
-                bit_pos = hashfunc(key,self.R)
-                key_in_set = testBit(self.val, bit_pos)
-                if bit_pos != 0:
-                        return True
-                return False
+        def test (self, key):
+                #OKAY so I have my k hash functions. If I check and one of them is 0, the query wasn't seen before 
+                #If I check and all them are set to 1, then I've most likely seen the query
+                flag = True
+                for i in range(self.kval):
+                        bit_pos = self.hfunc(x = key, seed = i)
+                        is_in_bloom = testBit(array_name = self.val, bit_num = bit_pos)
+                        if is_in_bloom == 0: #one of the hash functions had nver seen it
+                                flag = False
+                                break
+                return flag
+
