@@ -45,7 +45,7 @@ def setBit(array_name, bit_num):
 
 class BloomFilter ():
         def __init__ ( self , n , fp_rate ):
-                self.R = int(n*(math.log(fp_rate) // math.log(0.618)))
+                self.R = int(n*(math.log(fp_rate) / math.log(0.618)))
                 self.val = makeBitArray(bitSize = self.R, fill = 0) 
                 self.kval = int((self.R / n) * math.log(2))
                 self.hfunc = hashfunc(self.R)
@@ -65,7 +65,7 @@ class BloomFilter ():
                 for i in range(self.kval):
                         bit_pos = self.hfunc(x = key, seed = i)
                         is_in_bloom = testBit(array_name = self.val, bit_num = bit_pos)
-                        if is_in_bloom == 0: #one of the hash functions had nver seen it
+                        if is_in_bloom == 0: #one of the hash functions had never seen it so its not there
                                 flag = False
                                 break
                 return flag
