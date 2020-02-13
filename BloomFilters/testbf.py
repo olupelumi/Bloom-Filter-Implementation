@@ -24,6 +24,11 @@ for numb in range(10000,99999):
 
 #Initializing my bloom filter class
 bloom1 = bf.BloomFilter(10000, 0.01)
+#print(len(bloom1.val))
+ #adding the values from the membership set into the bloom filter
+for member in S:
+        bloom1.insert(member)
+print(bloom1.val)  
 
 
 

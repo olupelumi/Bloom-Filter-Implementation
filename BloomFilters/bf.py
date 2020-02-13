@@ -45,9 +45,9 @@ def setBit(array_name, bit_num):
 
 class BloomFilter ():
         def __init__ ( self , n , fp_rate ):
-                self.R = n*math.log(fp_rate - 0.618)
-                self.val = makeBitArray(bitSize = self.R,fill = 0) 
-                self.kval = (self.R / n) * math.log(2)
+                self.R = int(n*(math.log(fp_rate) // math.log(0.618)))
+                self.val = makeBitArray(bitSize = self.R, fill = 0) 
+                self.kval = int((self.R / n) * math.log(2))
                 self.hfunc = hashfunc(self.R)
 
         def insert (self, key):
