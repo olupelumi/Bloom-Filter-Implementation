@@ -2,9 +2,10 @@ import numpy as np
 import random
 import bf
 
+np.random.seed(seed = 6)
 S=np.random.randint(low=10000, high=99999, size=10000)
-#S=set(S)
-print(len(S))
+S = S.tolist()
+#print(len(S))
 
 #need to generate a list of 1000 numbers in and not in S
 
@@ -20,6 +21,9 @@ for numb in range(10000,99999):
                 count_len += 1
         if count_len == 1000:
                 break
+
+#Initializing my bloom filter class
+bloom1 = bf.BloomFilter(10000, 0.01)
 
 
 
